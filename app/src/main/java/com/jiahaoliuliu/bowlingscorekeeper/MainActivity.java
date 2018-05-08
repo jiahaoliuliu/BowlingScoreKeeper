@@ -37,6 +37,11 @@ public class MainActivity extends AppCompatActivity implements ScoreKeeperContra
     }
 
     @Override
+    public void addNewScore(int newScore) {
+        scoresListAdapter.addNewScore(newScore);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         presenter.onViewVisible();

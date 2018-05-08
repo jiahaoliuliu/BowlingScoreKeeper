@@ -11,6 +11,11 @@ public class ScoreKeeperContract {
 
     public interface View extends BaseView {
 
+        /**
+         * Add a new score to the existent list of scores
+         * @param newScore
+         */
+        void addNewScore(int newScore);
     }
 
     public interface Presenter extends BasePresenter {

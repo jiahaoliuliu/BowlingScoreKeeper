@@ -20,7 +20,7 @@ public class ScoreKeeperPresenter implements ScoreKeeperContract.Presenter {
 
     @Override
     public void onViewCreated() {
-        // Do nothing yet
+        // Add scores list
     }
 
     @Override
