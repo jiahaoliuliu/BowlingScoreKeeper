@@ -67,11 +67,84 @@ public class AutomaticBowlingScorer {
      *      the cumulative scores for those frames
      */
     public List<Integer> roll(Point point) {
-        // TODO: Implement this
-        scoresList.add(20);
+        if (gameIsOver()) {
+            restartNewGame();
+        }
+
+        // The late last frame or the penultimate frame
+        Frame lastFrame = framesLinkedList.pollLast();
+        Frame penultimateFrame = framesLinkedList.peekLast();
+
+        // Calculate the case
+        // First case: When it is firs score
+        if (lastFrame == null && penultimateFrame == null) {
+            return rollForFirstFrameFirstRoll(point);
+        }
+
+        if (lastFrame != null && penultimateFrame == null) {
+            if (!lastFrame.hasFinished()) {
+                return rollForFirstFrameSecondRoll(lastFrame, point);
+            } else {
+                return rollForSecondFrameFirstRoll(lastFrame, point);
+            }
+        }
+
+//        if (lastFrame != null && penultimateFrame != null) {
+//            return rollForNormalFrame(lastFrame, penultimateFrame, point);
+//        }
 
         return scoresList;
     }
+
+    private List<Integer> rollForFirstFrameFirstRoll(Point point) {
+        // Create a new Frame
+        Frame newFrame = new Frame();
+        newFrame.setFirstRoll(point);
+
+        framesLinkedList.addLast(newFrame);
+
+        // Do not update the score list yet. It will be updated later
+        return scoresList;
+    }
+
+    private List<Integer> rollForFirstFrameSecondRoll(Frame currentFrame, Point point) {
+        // Update the current frame
+        currentFrame.setSecondRoll(point);
+
+        if (point != Point.SPARE) {
+            // Update the score
+            scoresList.add(currentFrame.getFirstRoll().getValue() +
+                    currentFrame.getSecondRoll().getValue());
+        }
+
+        // Adding it back
+        framesLinkedList.addLast(currentFrame);
+
+        return scoresList;
+    }
+
+    private List<Integer> rollForSecondFrameFirstRoll(Frame lastFrame, Point point) {
+        // Check the last frame
+        if (lastFrame.getFirstRoll() == Point.STRIKE) {
+            // Do not do anything
+            return scoresList;
+        } else if (lastFrame.getSecondRoll() == Point.SPARE) {
+            scoresList.add(lastFrame.getSecondRoll().getValue() + point.getValue());
+            return scoresList;
+        } else {
+            if (point == Point.STRIKE || point == Point.SPARE) {
+                // Not do anything
+                return scoresList;
+            } else {
+                scoresList.add(point.getValue());
+                return scoresList;
+            }
+        }
+    }
+
+//    private List<Integer> rollForNormalFrame(Frame lastFrame, Frame penultimateFrame, Point point) {
+//
+//    }
 
     private void restartNewGame() {
         scoresList.clear();

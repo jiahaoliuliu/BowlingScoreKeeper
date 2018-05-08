@@ -38,7 +38,7 @@ public class Frame {
     // Helper methods
     public boolean hasFinished() {
         if (!isLastFrame) {
-            return firstRoll != null && secondRoll != null;
+            return (firstRoll == Point.STRIKE) || (firstRoll != null && secondRoll != null);
         } else {
             return firstRoll != null && secondRoll != null && thirdRoll != null;
         }
