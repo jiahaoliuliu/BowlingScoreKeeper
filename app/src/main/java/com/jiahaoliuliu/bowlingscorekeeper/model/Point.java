@@ -1,4 +1,4 @@
-package com.jiahaoliuliu.bowlingscorekeeper;
+package com.jiahaoliuliu.bowlingscorekeeper.model;
 
 /**
  * All the possible points that a player can enter per roll
