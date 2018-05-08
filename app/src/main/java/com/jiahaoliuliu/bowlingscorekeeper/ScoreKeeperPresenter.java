@@ -1,5 +1,6 @@
 package com.jiahaoliuliu.bowlingscorekeeper;
 
+import com.jiahaoliuliu.bowlingscorekeeper.model.Point;
 import com.jiahaoliuliu.bowlingscorekeeper.mvp.BaseView;
 
 public class ScoreKeeperPresenter implements ScoreKeeperContract.Presenter {
@@ -21,6 +22,9 @@ public class ScoreKeeperPresenter implements ScoreKeeperContract.Presenter {
     @Override
     public void onViewCreated() {
         // Add scores list
+
+        // Randomly roll the points to the system
+        scorer.roll(Point.NINE);
     }
 
     @Override

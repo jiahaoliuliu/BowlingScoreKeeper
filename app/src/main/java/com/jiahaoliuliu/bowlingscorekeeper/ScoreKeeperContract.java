@@ -4,6 +4,8 @@ import com.jiahaoliuliu.bowlingscorekeeper.mvp.BaseModel;
 import com.jiahaoliuliu.bowlingscorekeeper.mvp.BasePresenter;
 import com.jiahaoliuliu.bowlingscorekeeper.mvp.BaseView;
 
+import java.util.List;
+
 /**
  * The contract for the MVP of this feature
  */
@@ -12,10 +14,9 @@ public class ScoreKeeperContract {
     public interface View extends BaseView {
 
         /**
-         * Add a new score to the existent list of scores
-         * @param newScore
+         * Update the view with a new scores list
          */
-        void addNewScore(int newScore);
+        void updateView(List<Integer> scoresList);
     }
 
     public interface Presenter extends BasePresenter {

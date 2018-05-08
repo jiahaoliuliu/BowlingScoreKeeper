@@ -23,7 +23,9 @@ public class ScoresListPresenterImpl implements ScoresListPresenter {
     }
 
     @Override
-    public void addScore(int score) {
-        scoresList.add(score);
+    public void setScoresList(List<Integer> scoresList) {
+        this.scoresList.clear();
+        this.scoresList.addAll(scoresList);
     }
+
 }

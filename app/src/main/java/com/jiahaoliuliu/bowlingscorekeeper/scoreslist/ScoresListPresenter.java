@@ -1,5 +1,7 @@
 package com.jiahaoliuliu.bowlingscorekeeper.scoreslist;
 
+import java.util.List;
+
 public interface ScoresListPresenter {
 
     /**
@@ -18,8 +20,8 @@ public interface ScoresListPresenter {
     int getScoresListCount();
 
     /**
-     * Add new score to the list
-     * @param score
+     * Set scores list
+     * @param scoresList
      */
-    void addScore(int score);
+    void setScoresList(List<Integer> scoresList);
 }

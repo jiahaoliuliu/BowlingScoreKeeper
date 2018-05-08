@@ -36,8 +36,8 @@ public class ScoresListAdapter extends RecyclerView.Adapter<ScoreViewHolder> {
         return scoresListPresenter.getScoresListCount();
     }
 
-    public void addNewScore(int score) {
-        scoresListPresenter.addScore(score);
+    public void setScoresList(List<Integer> scoresList) {
+        scoresListPresenter.setScoresList(scoresList);
         notifyDataSetChanged();
     }
 }

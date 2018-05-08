@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 
 import com.jiahaoliuliu.bowlingscorekeeper.scoreslist.ScoresListAdapter;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements ScoreKeeperContract.View {
 
     // Internal variables
@@ -37,11 +39,6 @@ public class MainActivity extends AppCompatActivity implements ScoreKeeperContra
     }
 
     @Override
-    public void addNewScore(int newScore) {
-        scoresListAdapter.addNewScore(newScore);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         presenter.onViewVisible();
@@ -57,5 +54,10 @@ public class MainActivity extends AppCompatActivity implements ScoreKeeperContra
     protected void onDestroy() {
         presenter.onViewDestroyed();
         super.onDestroy();
+    }
+
+    @Override
+    public void updateView(List<Integer> scoresList) {
+        scoresListAdapter.setScoresList(scoresList);
     }
 }
