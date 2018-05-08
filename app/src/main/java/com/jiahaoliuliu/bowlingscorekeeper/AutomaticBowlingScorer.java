@@ -1,8 +1,10 @@
 package com.jiahaoliuliu.bowlingscorekeeper;
 
+import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
 import com.jiahaoliuliu.bowlingscorekeeper.model.Point;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,10 +13,18 @@ import java.util.List;
 public class AutomaticBowlingScorer {
 
     private static final int MAXIMUM_SCORE_NUMBER = 10;
-    private List<Integer> scoresList;
+    private final List<Integer> scoresList;
+
+    /**
+     * A double-linked list for the frames. This is because when the player scores a
+     * {@link Point#SPARE} or {@link Point#STRIKE}, the frame need to be filled but not so the
+     * scores. After 1 or 2 more rolls, the system need to come back and fill the scores
+     */
+    private final LinkedList<Frame> framesLinkedList;
 
     public AutomaticBowlingScorer() {
         scoresList = new ArrayList<>();
+        framesLinkedList = new LinkedList<>();
     }
 
     /**
@@ -22,8 +32,7 @@ public class AutomaticBowlingScorer {
      * @return
      */
     public int frameNumber() {
-        // TODO: implement this
-        return 0;
+        return framesLinkedList.size();
     }
 
     /**
@@ -54,13 +63,13 @@ public class AutomaticBowlingScorer {
      *      the cumulative scores for those frames
      */
     public List<Integer> roll(Point point) {
-        List<Integer> scoresList = new ArrayList<>();
         // TODO: Implement this
 
         return scoresList;
     }
 
-    private void startNewGame() {
-        // TODO: Implement this
+    private void restartNewGame() {
+        scoresList.clear();
+        framesLinkedList.clear();
     }
 }
