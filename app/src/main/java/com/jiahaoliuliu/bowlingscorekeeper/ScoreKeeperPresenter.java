@@ -5,11 +5,12 @@ import com.jiahaoliuliu.bowlingscorekeeper.mvp.BaseView;
 public class ScoreKeeperPresenter implements ScoreKeeperContract.Presenter {
 
     private ScoreKeeperContract.View view;
-
     private final ScoreKeeperContract.Model model;
+    private final AutomaticBowlingScorer scorer;
 
     public ScoreKeeperPresenter() {
         this.model = new ScoreKeeperModel();
+        this.scorer = new AutomaticBowlingScorer();
     }
 
     @Override
