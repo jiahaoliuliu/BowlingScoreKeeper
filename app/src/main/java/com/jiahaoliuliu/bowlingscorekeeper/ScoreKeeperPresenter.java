@@ -24,7 +24,7 @@ public class ScoreKeeperPresenter implements ScoreKeeperContract.Presenter {
         // Add scores list
 
         // Randomly roll the points to the system
-        scorer.roll(Point.NINE);
+        view.updateView(scorer.roll(Point.NINE));
     }
 
     @Override

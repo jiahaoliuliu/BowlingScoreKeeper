@@ -41,6 +41,10 @@ public class AutomaticBowlingScorer {
      *      The current score
      */
     public int scoreSoFar() {
+        if (scoresList.isEmpty()) {
+            return 0;
+        }
+
         // The last score
         return scoresList.get(scoresList.size() - 1);
     }
@@ -64,6 +68,7 @@ public class AutomaticBowlingScorer {
      */
     public List<Integer> roll(Point point) {
         // TODO: Implement this
+        scoresList.add(20);
 
         return scoresList;
     }
