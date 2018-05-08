@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BowlingScoreKeeper</string>
+    <string name="player_1">Player 1</string>
 </resources>
