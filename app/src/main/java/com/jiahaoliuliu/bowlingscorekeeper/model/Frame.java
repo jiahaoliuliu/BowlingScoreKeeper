@@ -40,7 +40,15 @@ public class Frame {
         if (!isLastFrame) {
             return (firstRoll == Point.STRIKE) || (firstRoll != null && secondRoll != null);
         } else {
-            return firstRoll != null && secondRoll != null && thirdRoll != null;
+            if (firstRoll != null && secondRoll != null) {
+                if (firstRoll == Point.STRIKE || secondRoll == Point.STRIKE || secondRoll == Point.SPARE) {
+                    return thirdRoll != null;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
         }
     }
 
@@ -102,6 +110,21 @@ public class Frame {
      * @return
      */
     public int getCurrentScore() {
+        if (isLastFrame()) {
+            if (hasFinished()) {
+                if (isStrike()) {
+                    // Counting all three rolls
+                    return firstRoll.getValue() + secondRoll.getValue() + thirdRoll.getValue();
+                } else if (isSpare()) {
+                    return secondRoll.getValue() + thirdRoll.getValue();
+                } else {
+                    return firstRoll.getValue() + secondRoll.getValue();
+                }
+            } else {
+                return 0;
+            }
+        }
+
         if (isStrike()) {
             return Point.STRIKE.getValue();
         }

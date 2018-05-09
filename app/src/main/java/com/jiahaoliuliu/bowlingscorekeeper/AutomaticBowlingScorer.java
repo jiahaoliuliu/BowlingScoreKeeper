@@ -71,6 +71,7 @@ public class AutomaticBowlingScorer {
         Frame frameToFill = getFrameToFill();
         frameToFill.addPoint(point);
         updateScores();
+        updateScores();
         return generateCurrentScoresList();
     }
 
@@ -101,10 +102,10 @@ public class AutomaticBowlingScorer {
     }
 
     private List<Integer> generateCurrentScoresList() {
-        Log.v("FramesList", "The content of the frameslist is " + framesList);
+        Log.v("FramesList", "The content of the frames list is " + framesList);
 
         List<Integer> currentScoresList = new ArrayList<>();
-        for (int i = 0; i < lastNonScorePosition - 1; i++) {
+        for (int i = 0; i < lastNonScorePosition; i++) {
             currentScoresList.add(framesList.get(i).getScore());
         }
 
@@ -115,11 +116,27 @@ public class AutomaticBowlingScorer {
      * Update all the possible scores
      */
     private void updateScores() {
+        if (lastNonScorePosition >= framesList.size()) {
+            return;
+        }
+
 //        Frame lastNonScoredFrame = getNextFrame(lastNonScorePosition);
         Frame lastNonScoredFrame = framesList.get(lastNonScorePosition);
         if (lastNonScoredFrame == null) {
             // It is the limit of the frame
             return;
+        }
+
+        // if it is the last frame and it is finished, calculate the score
+        if (lastNonScoredFrame.isLastFrame()){
+            if (lastNonScoredFrame.hasFinished()) {
+                int score = scoreSoFar() + lastNonScoredFrame.getCurrentScore();
+                lastNonScoredFrame.setScore(score);
+                lastNonScorePosition++; // This will mark the game as finished
+                return;
+            } else {
+                return;
+            }
         }
 
         if (lastNonScoredFrame.isStrike()) {
@@ -128,6 +145,14 @@ public class AutomaticBowlingScorer {
             // If the next frame does not exists, not do anything
             if (nextFrame == null) {
                 return;
+            }
+
+            // If the next frame is the last frame and the second roll has finished
+            if (nextFrame.isLastFrame() && nextFrame.getSecondRoll() != null) {
+                int score = scoreSoFar() + nextFrame.getFirstRoll().getValue()
+                        + nextFrame.getSecondRoll().getValue();
+                lastNonScoredFrame.setScore(score);
+                lastNonScorePosition++;
             }
 
             if (nextFrame.isStrike()) {
