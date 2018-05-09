@@ -1,5 +1,7 @@
 package com.jiahaoliuliu.bowlingscorekeeper;
 
+import android.util.Log;
+
 import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
 import com.jiahaoliuliu.bowlingscorekeeper.model.Point;
 
@@ -13,18 +15,13 @@ import java.util.List;
 public class AutomaticBowlingScorer {
 
     private static final int MAXIMUM_SCORE_NUMBER = 10;
-    private final List<Integer> scoresList;
 
-    /**
-     * A double-linked list for the frames. This is because when the player scores a
-     * {@link Point#SPARE} or {@link Point#STRIKE}, the frame need to be filled but not so the
-     * scores. After 1 or 2 more rolls, the system need to come back and fill the scores
-     */
-    private final LinkedList<Frame> framesLinkedList;
+    public final List<Frame> framesList;
+    public int lastNonScorePosition;
 
     public AutomaticBowlingScorer() {
-        scoresList = new ArrayList<>();
-        framesLinkedList = new LinkedList<>();
+        framesList = new ArrayList<>();
+        lastNonScorePosition = 0;
     }
 
     /**
@@ -32,7 +29,7 @@ public class AutomaticBowlingScorer {
      * @return
      */
     public int frameNumber() {
-        return framesLinkedList.size();
+        return framesList.size();
     }
 
     /**
@@ -41,12 +38,12 @@ public class AutomaticBowlingScorer {
      *      The current score
      */
     public int scoreSoFar() {
-        if (scoresList.isEmpty()) {
+        if (framesList.isEmpty() || lastNonScorePosition == 0) {
             return 0;
         }
 
-        // The last score
-        return scoresList.get(scoresList.size() - 1);
+        // The score from the last scored position
+        return framesList.get(lastNonScorePosition - 1).getScore();
     }
 
     /**
@@ -56,7 +53,7 @@ public class AutomaticBowlingScorer {
      *      False otherwise
      */
     public boolean gameIsOver() {
-        return scoresList.size() == MAXIMUM_SCORE_NUMBER;
+        return lastNonScorePosition == MAXIMUM_SCORE_NUMBER;
     }
 
     /**
@@ -71,83 +68,149 @@ public class AutomaticBowlingScorer {
             restartNewGame();
         }
 
-        // The late last frame or the penultimate frame
-        Frame lastFrame = framesLinkedList.pollLast();
-        Frame penultimateFrame = framesLinkedList.peekLast();
-
-        // Calculate the case
-        // First case: When it is firs score
-        if (lastFrame == null && penultimateFrame == null) {
-            return rollForFirstFrameFirstRoll(point);
-        }
-
-        if (lastFrame != null && penultimateFrame == null) {
-            if (!lastFrame.hasFinished()) {
-                return rollForFirstFrameSecondRoll(lastFrame, point);
-            } else {
-                return rollForSecondFrameFirstRoll(lastFrame, point);
-            }
-        }
-
-//        if (lastFrame != null && penultimateFrame != null) {
-//            return rollForNormalFrame(lastFrame, penultimateFrame, point);
-//        }
-
-        return scoresList;
+        Frame frameToFill = getFrameToFill();
+        frameToFill.addPoint(point);
+        updateScores();
+        updateScores();
+        return generateCurrentScoresList();
     }
 
-    private List<Integer> rollForFirstFrameFirstRoll(Point point) {
-        // Create a new Frame
-        Frame newFrame = new Frame();
-        newFrame.setFirstRoll(point);
-
-        framesLinkedList.addLast(newFrame);
-
-        // Do not update the score list yet. It will be updated later
-        return scoresList;
-    }
-
-    private List<Integer> rollForFirstFrameSecondRoll(Frame currentFrame, Point point) {
-        // Update the current frame
-        currentFrame.setSecondRoll(point);
-
-        if (point != Point.SPARE) {
-            // Update the score
-            scoresList.add(currentFrame.getFirstRoll().getValue() +
-                    currentFrame.getSecondRoll().getValue());
+    private Frame getFrameToFill() {
+        // For the first frame
+        if (framesList.isEmpty()) {
+            Frame firstFrame = new Frame();
+            framesList.add(firstFrame);
+            return firstFrame;
         }
 
-        // Adding it back
-        framesLinkedList.addLast(currentFrame);
-
-        return scoresList;
-    }
-
-    private List<Integer> rollForSecondFrameFirstRoll(Frame lastFrame, Point point) {
-        // Check the last frame
-        if (lastFrame.getFirstRoll() == Point.STRIKE) {
-            // Do not do anything
-            return scoresList;
-        } else if (lastFrame.getSecondRoll() == Point.SPARE) {
-            scoresList.add(lastFrame.getSecondRoll().getValue() + point.getValue());
-            return scoresList;
-        } else {
-            if (point == Point.STRIKE || point == Point.SPARE) {
-                // Not do anything
-                return scoresList;
-            } else {
-                scoresList.add(point.getValue());
-                return scoresList;
-            }
+        // Get the last frame
+        Frame lastFrame = framesList.get(framesList.size() - 1);
+        if (!lastFrame.hasFinished()) {
+            return lastFrame;
         }
-    }
 
-//    private List<Integer> rollForNormalFrame(Frame lastFrame, Frame penultimateFrame, Point point) {
-//
-//    }
+        // The last frame has finished
+        Frame nextFrame = new Frame();
+        nextFrame.setLastFrame(framesList.size() == MAXIMUM_SCORE_NUMBER - 1);
+        framesList.add(nextFrame);
+        return nextFrame;
+    }
 
     private void restartNewGame() {
-        scoresList.clear();
-        framesLinkedList.clear();
+        framesList.clear();
+        lastNonScorePosition = 0;
+    }
+
+    private List<Integer> generateCurrentScoresList() {
+        Log.v("FramesList", "The content of the frames list is " + framesList);
+
+        List<Integer> currentScoresList = new ArrayList<>();
+        for (int i = 0; i < lastNonScorePosition; i++) {
+            currentScoresList.add(framesList.get(i).getScore());
+        }
+
+        return currentScoresList;
+    }
+
+    /**
+     * Update all the possible scores
+     */
+    private void updateScores() {
+        if (lastNonScorePosition >= framesList.size()) {
+            return;
+        }
+
+//        Frame lastNonScoredFrame = getNextFrame(lastNonScorePosition);
+        Frame lastNonScoredFrame = framesList.get(lastNonScorePosition);
+        if (lastNonScoredFrame == null) {
+            // It is the limit of the frame
+            return;
+        }
+
+        // if it is the last frame and it is finished, calculate the score
+        if (lastNonScoredFrame.isLastFrame()){
+            if (lastNonScoredFrame.hasFinished()) {
+                int score = scoreSoFar() + lastNonScoredFrame.getCurrentScore();
+                lastNonScoredFrame.setScore(score);
+                lastNonScorePosition++; // This will mark the game as finished
+                return;
+            } else {
+                return;
+            }
+        }
+
+        if (lastNonScoredFrame.isStrike()) {
+            Frame nextFrame = getNextFrame(lastNonScorePosition);
+
+            // If the next frame does not exists, not do anything
+            if (nextFrame == null) {
+                return;
+            }
+
+            // If the next frame is the last frame and the second roll has finished
+            if (nextFrame.isLastFrame() && nextFrame.getSecondRoll() != null) {
+                int score = scoreSoFar() + nextFrame.getFirstRoll().getValue()
+                        + nextFrame.getSecondRoll().getValue();
+                lastNonScoredFrame.setScore(score);
+                lastNonScorePosition++;
+            }
+
+            if (nextFrame.isStrike()) {
+                Frame nextNextFrame = getNextFrame(lastNonScorePosition + 1);
+
+                // If the next next frame does not exists, not do anything
+                if (nextNextFrame == null) {
+                    return;
+                }
+
+                int score = scoreSoFar() + lastNonScoredFrame.getCurrentScore() + nextFrame.getCurrentScore()
+                        + nextNextFrame.getFirstRoll().getValue();
+                lastNonScoredFrame.setScore(score);
+                lastNonScorePosition++;
+            } else {
+                // Only count the score if it has finished
+                if (nextFrame.hasFinished()) {
+                    int score = scoreSoFar() + lastNonScoredFrame.getCurrentScore() + nextFrame.getCurrentScore();
+                    lastNonScoredFrame.setScore(score);
+                    lastNonScorePosition++;
+                }
+            }
+
+            return;
+        }
+
+        if (lastNonScoredFrame.isSpare()) {
+            Frame nextFrame = getNextFrame(lastNonScorePosition);
+            if (nextFrame == null) {
+                return;
+            }
+
+            int score = scoreSoFar() + lastNonScoredFrame.getCurrentScore() + nextFrame.getFirstRoll().getValue();
+            lastNonScoredFrame.setScore(score);
+            lastNonScorePosition++;
+            return;
+        }
+
+        // For normal cases. The score is added only if the current frame has finished.
+        // This is an implicit condition for Strike and Spare
+        if (lastNonScoredFrame.hasFinished()) {
+            int score = scoreSoFar() + lastNonScoredFrame.getCurrentScore();
+            lastNonScoredFrame.setScore(score);
+            lastNonScorePosition++;
+        }
+    }
+
+    private Frame getNextFrame(int currentFramePosition) {
+        // Precondition
+        if (framesList.isEmpty()) {
+            return null;
+        }
+
+        // If it is the last frame, return null
+        if (framesList.size() - 1 <= currentFramePosition) {
+            return null;
+        }
+
+        return framesList.get(currentFramePosition + 1);
     }
 }

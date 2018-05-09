@@ -40,15 +40,120 @@ public class Frame {
         if (!isLastFrame) {
             return (firstRoll == Point.STRIKE) || (firstRoll != null && secondRoll != null);
         } else {
-            return firstRoll != null && secondRoll != null && thirdRoll != null;
+            if (firstRoll != null && secondRoll != null) {
+                if (firstRoll == Point.STRIKE || secondRoll == Point.STRIKE || secondRoll == Point.SPARE) {
+                    return thirdRoll != null;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
         }
+    }
+
+    /**
+     * Check if the current frame is a strike
+     * @return
+     *      True if the first roll is a strike
+     *      False otherwise
+     */
+    public boolean isStrike() {
+        return Point.STRIKE == firstRoll;
+    }
+
+    /**
+     * Check if the current from is a spare
+     * @return
+     *      True if the second roll is a spare
+     *      False otherwise
+     */
+    public boolean isSpare() {
+        return Point.SPARE == secondRoll;
+    }
+
+    /**
+     * Check if it is possible to add a third roll. This is possible if
+     *     - Current frame is the last frame
+     *     - The player has archived a strike on the first roll or a spare on the second roll
+     * Note the reason why it does not check if the second roll is a Strike is because it is not
+     * necessary. The unique way that a player can archive a Strike on the second roll is because
+     * he already have archived a Strike on the first roll, which is a valid condition to add a
+     * third roll
+     * @return
+     */
+    public boolean canAddAThirdRoll() {
+        return (isLastFrame() && thirdRoll == null &&
+                (Point.STRIKE == firstRoll || Point.SPARE == secondRoll));
+    }
+
+    public void addPoint(Point point) {
+        if (firstRoll == null) {
+            setFirstRoll(point);
+            return;
+        }
+
+        if (secondRoll == null) {
+            setSecondRoll(point);
+            return;
+        }
+
+        if (!canAddAThirdRoll()) {
+            throw new IllegalStateException("The current frame cannot add a third roll");
+        }
+
+        setThirdRoll(point);
+    }
+
+    /**
+     * Get the calculated current score. This might change in the future
+     * @return
+     */
+    public int getCurrentScore() {
+        if (isLastFrame()) {
+            if (hasFinished()) {
+                if (isStrike()) {
+                    // Counting all three rolls
+                    return firstRoll.getValue() + secondRoll.getValue() + thirdRoll.getValue();
+                } else if (isSpare()) {
+                    return secondRoll.getValue() + thirdRoll.getValue();
+                } else {
+                    return firstRoll.getValue() + secondRoll.getValue();
+                }
+            } else {
+                return 0;
+            }
+        }
+
+        if (isStrike()) {
+            return Point.STRIKE.getValue();
+        }
+
+        if (isSpare()) {
+            return Point.SPARE.getValue();
+        }
+
+        int currentScore = 0;
+        if (firstRoll != null) {
+            currentScore += firstRoll.getValue();
+        }
+
+        if (secondRoll != null) {
+            currentScore += secondRoll.getValue();
+        }
+
+        if (thirdRoll != null) {
+            currentScore += thirdRoll.getValue();
+        }
+
+        return currentScore;
     }
 
     public Point getFirstRoll() {
         return firstRoll;
     }
 
-    public void setFirstRoll(Point firstRoll) {
+    private void setFirstRoll(Point firstRoll) {
         this.firstRoll = firstRoll;
     }
 
@@ -56,7 +161,7 @@ public class Frame {
         return secondRoll;
     }
 
-    public void setSecondRoll(Point secondRoll) {
+    private void setSecondRoll(Point secondRoll) {
         this.secondRoll = secondRoll;
     }
 
@@ -64,7 +169,7 @@ public class Frame {
         return thirdRoll;
     }
 
-    public void setThirdRoll(Point thirdRoll) {
+    private void setThirdRoll(Point thirdRoll) {
         this.thirdRoll = thirdRoll;
     }
 
