@@ -6,7 +6,6 @@ import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
 import com.jiahaoliuliu.bowlingscorekeeper.model.Point;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -63,7 +62,7 @@ public class AutomaticBowlingScorer {
      *      An array whose length is the number of frames COMPLETELY scored, whose contents are
      *      the cumulative scores for those frames
      */
-    public List<Integer> roll(Point point) {
+    public List<Frame> roll(Point point) {
         if (gameIsOver()) {
             restartNewGame();
         }
@@ -71,8 +70,9 @@ public class AutomaticBowlingScorer {
         Frame frameToFill = getFrameToFill();
         frameToFill.addPoint(point);
         updateScores();
+        // Deprecate the second update
         updateScores();
-        return generateCurrentScoresList();
+        return framesList;
     }
 
     private Frame getFrameToFill() {
@@ -99,17 +99,6 @@ public class AutomaticBowlingScorer {
     private void restartNewGame() {
         framesList.clear();
         lastNonScorePosition = 0;
-    }
-
-    private List<Integer> generateCurrentScoresList() {
-        Log.v("FramesList", "The content of the frames list is " + framesList);
-
-        List<Integer> currentScoresList = new ArrayList<>();
-        for (int i = 0; i < lastNonScorePosition; i++) {
-            currentScoresList.add(framesList.get(i).getScore());
-        }
-
-        return currentScoresList;
     }
 
     /**

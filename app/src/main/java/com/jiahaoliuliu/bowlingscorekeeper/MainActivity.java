@@ -1,11 +1,14 @@
 package com.jiahaoliuliu.bowlingscorekeeper;
 
+import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.jiahaoliuliu.bowlingscorekeeper.scoreslist.ScoresListAdapter;
+import com.jiahaoliuliu.bowlingscorekeeper.databinding.ActivityMainBinding;
+import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
+import com.jiahaoliuliu.bowlingscorekeeper.frameslist.FramesListAdapter;
 
 import java.util.List;
 
@@ -13,24 +16,23 @@ public class MainActivity extends AppCompatActivity implements ScoreKeeperContra
 
     // Internal variables
     private ScoreKeeperContract.Presenter presenter;
-    private ScoresListAdapter scoresListAdapter;
+    private FramesListAdapter framesListAdapter;
 
     // Views
-    private RecyclerView recyclerView;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         // Prepare the views
-        recyclerView = findViewById(R.id.recycler_view);
-        scoresListAdapter = new ScoresListAdapter();
+        framesListAdapter = new FramesListAdapter();
         // Set up the horizontal list view
         RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(scoresListAdapter);
+        binding.recyclerView.setLayoutManager(layoutManager);
+        binding.recyclerView.setAdapter(framesListAdapter);
 
         // Init the presenter
         presenter = new ScoreKeeperPresenter();
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements ScoreKeeperContra
     }
 
     @Override
-    public void updateView(List<Integer> scoresList) {
-        scoresListAdapter.setScoresList(scoresList);
+    public void updateView(List<Frame> framesList) {
+        framesListAdapter.setFramesList(framesList);
     }
 }
