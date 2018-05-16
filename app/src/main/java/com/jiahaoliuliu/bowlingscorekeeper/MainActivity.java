@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import com.jiahaoliuliu.bowlingscorekeeper.databinding.ActivityMainBinding;
 import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
 import com.jiahaoliuliu.bowlingscorekeeper.frameslist.FramesListAdapter;
+import com.jiahaoliuliu.bowlingscorekeeper.model.IFrame;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements ScoreKeeperContra
     }
 
     @Override
-    public void updateView(List<Frame> framesList) {
+    public void updateView(List<IFrame> framesList) {
         framesListAdapter.setFramesList(framesList);
     }
 }

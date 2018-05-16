@@ -1,6 +1,6 @@
 package com.jiahaoliuliu.bowlingscorekeeper;
 
-import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
+import com.jiahaoliuliu.bowlingscorekeeper.model.IFrame;
 import com.jiahaoliuliu.bowlingscorekeeper.mvp.BaseModel;
 import com.jiahaoliuliu.bowlingscorekeeper.mvp.BasePresenter;
 import com.jiahaoliuliu.bowlingscorekeeper.mvp.BaseView;
@@ -17,7 +17,7 @@ public class ScoreKeeperContract {
         /**
          * Update the view with the new list of frames
          */
-        void updateView(List<Frame> framesList);
+        void updateView(List<IFrame> framesList);
     }
 
     public interface Presenter extends BasePresenter {

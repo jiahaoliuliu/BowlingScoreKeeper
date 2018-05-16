@@ -3,12 +3,10 @@ package com.jiahaoliuliu.bowlingscorekeeper.frameslist;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
-import com.jiahaoliuliu.bowlingscorekeeper.R;
 import com.jiahaoliuliu.bowlingscorekeeper.databinding.FramesListItemBinding;
-import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
+import com.jiahaoliuliu.bowlingscorekeeper.model.IFrame;
 
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class FramesListAdapter extends RecyclerView.Adapter<FrameViewHolder> {
         return framesListPresenter.getFramesListCount();
     }
 
-    public void setFramesList(List<Frame> framesList) {
+    public void setFramesList(List<IFrame> framesList) {
         framesListPresenter.setFramesList(framesList);
         notifyDataSetChanged();
     }

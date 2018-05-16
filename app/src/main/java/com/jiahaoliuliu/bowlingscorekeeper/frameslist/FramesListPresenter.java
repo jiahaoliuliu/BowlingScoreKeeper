@@ -1,6 +1,6 @@
 package com.jiahaoliuliu.bowlingscorekeeper.frameslist;
 
-import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
+import com.jiahaoliuliu.bowlingscorekeeper.model.IFrame;
 
 import java.util.List;
 
@@ -25,5 +25,5 @@ public interface FramesListPresenter {
      * Set the frame list
      * @param framesList
      */
-    void setFramesList(List<Frame> framesList);
+    void setFramesList(List<IFrame> framesList);
 }

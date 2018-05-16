@@ -1,13 +1,13 @@
 package com.jiahaoliuliu.bowlingscorekeeper.frameslist;
 
-import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
+import com.jiahaoliuliu.bowlingscorekeeper.model.IFrame;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FramesListPresenterImpl implements FramesListPresenter {
 
-    private final List<Frame> framesList;
+    private final List<IFrame> framesList;
 
     public FramesListPresenterImpl() {
         this.framesList = new ArrayList<>();
@@ -15,7 +15,7 @@ public class FramesListPresenterImpl implements FramesListPresenter {
 
     @Override
     public void onBindFrameRowViewAtPosition(FrameRowView frameRowView, int position) {
-        Frame frame = framesList.get(position);
+        IFrame frame = framesList.get(position);
         frameRowView.setFrame(frame);
     }
 
@@ -25,7 +25,7 @@ public class FramesListPresenterImpl implements FramesListPresenter {
     }
 
     @Override
-    public void setFramesList(List<Frame> framesList) {
+    public void setFramesList(List<IFrame> framesList) {
         this.framesList.clear();
         this.framesList.addAll(framesList);
     }
