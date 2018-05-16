@@ -1,7 +1,5 @@
 package com.jiahaoliuliu.bowlingscorekeeper;
 
-import android.util.Log;
-
 import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
 import com.jiahaoliuliu.bowlingscorekeeper.model.IFrame;
 import com.jiahaoliuliu.bowlingscorekeeper.model.LastFrame;

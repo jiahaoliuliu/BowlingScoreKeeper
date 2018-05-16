@@ -3,15 +3,20 @@ package com.jiahaoliuliu.bowlingscorekeeper;
 import com.jiahaoliuliu.bowlingscorekeeper.model.Point;
 import com.jiahaoliuliu.bowlingscorekeeper.mvp.BaseView;
 
+import javax.inject.Inject;
+
 public class ScoreKeeperPresenter implements ScoreKeeperContract.Presenter {
 
     private ScoreKeeperContract.View view;
-    private final ScoreKeeperContract.Model model;
-    private final AutomaticBowlingScorer scorer;
+
+    @Inject
+    AutomaticBowlingScorer scorer;
+
+    @Inject
+    ScoreKeeperContract.Model model;
 
     public ScoreKeeperPresenter() {
-        this.model = new ScoreKeeperModel();
-        this.scorer = new AutomaticBowlingScorer();
+        MyApplication.getSimpleComponent().inject(this);
     }
 
     @Override

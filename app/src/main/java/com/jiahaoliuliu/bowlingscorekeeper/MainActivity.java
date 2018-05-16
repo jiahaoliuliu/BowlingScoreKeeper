@@ -13,10 +13,13 @@ import com.jiahaoliuliu.bowlingscorekeeper.model.IFrame;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class MainActivity extends AppCompatActivity implements ScoreKeeperContract.View {
 
     // Internal variables
-    private ScoreKeeperContract.Presenter presenter;
+    @Inject
+    ScoreKeeperContract.Presenter presenter;
     private FramesListAdapter framesListAdapter;
 
     // Views
@@ -25,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements ScoreKeeperContra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Inject the variables
+        MyApplication.getSimpleComponent().inject(this);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         // Prepare the views
