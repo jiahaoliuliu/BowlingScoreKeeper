@@ -132,21 +132,23 @@ public class AutomaticBowlingScorer {
                     score += lastNonScoredFrame.getSecondRoll().getValue();
                     score += lastNonScoredFrame.getThirdRoll().getValue();
                     lastNonScoredFrame.setFinalScore(score);
+                    lastNonScorePosition++;
                     return;
                 }
             } else if (lastNonScoredFrame.isSpare()) {
                 lastNonScoredFrame.setFinalScore(scoreSoFar() + lastNonScoredFrame.getSecondRoll().getValue() +
                         lastNonScoredFrame.getThirdRoll().getValue());
+                lastNonScorePosition++;
                 return;
             } else {
                 lastNonScoredFrame.setFinalScore(scoreSoFar() + lastNonScoredFrame.getFirstRoll().getValue() +
                 lastNonScoredFrame.getSecondRoll().getValue());
+                lastNonScorePosition++;
                 return;
             }
         }
 
         if (lastNonScoredFrame.isStrike()) {
-
             IFrame nextFrame = getNextFrame(lastNonScorePosition);
 
             // If the next frame does not exists, not do anything
@@ -155,6 +157,15 @@ public class AutomaticBowlingScorer {
             }
 
             if (nextFrame.isStrike()) {
+                // If it is the last frame, get the first two scores if exists
+                if (nextFrame.isLastFrame() && nextFrame.hasFirstRoll() &&
+                        nextFrame.hasSecondRoll()) {
+                    lastNonScoredFrame.setFinalScore(scoreSoFar() + Point.STRIKE.getValue() +
+                        nextFrame.getFirstRoll().getValue() + nextFrame.getSecondRoll().getValue());
+                    lastNonScorePosition++;
+                    return;
+                }
+
                 IFrame nextNextFrame = getNextFrame(lastNonScorePosition + 1);
 
                 // If the next next frame does not exists, not do anything

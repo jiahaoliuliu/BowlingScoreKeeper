@@ -13,6 +13,14 @@ public interface IFrame {
     Point getFirstRoll();
 
     /**
+     * Check if it has the first roll
+     * @return
+     *      True if the first roll has been filled
+     *      False otherwise
+     */
+    boolean hasFirstRoll();
+
+    /**
      * Get the points of the second roll
      * @return
      *      The point of the second roll
@@ -20,11 +28,27 @@ public interface IFrame {
     Point getSecondRoll();
 
     /**
+     * Check if the second roll has been filled
+     * @return
+     *      True if the second roll has been filled
+     *      False otherwise
+     */
+    boolean hasSecondRoll();
+
+    /**
      * Get the third roll
      * @return
      *      The third roll if exist
      */
     Point getThirdRoll();
+
+    /**
+     * Check if the third roll has been filled
+     * @return
+     *      True if the third roll has been filled
+     *      False otherwise
+     */
+    boolean hasThirdRoll();
 
     /**
      * If the current frame is a strike

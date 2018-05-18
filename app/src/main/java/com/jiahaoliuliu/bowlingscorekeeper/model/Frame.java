@@ -120,6 +120,11 @@ public class Frame implements IFrame{
         return firstRoll;
     }
 
+    @Override
+    public boolean hasFirstRoll() {
+        return getFirstRoll() != Point.EMPTY;
+    }
+
     private void setFirstRoll(Point firstRoll) {
         this.firstRoll = firstRoll;
     }
@@ -128,8 +133,18 @@ public class Frame implements IFrame{
         return secondRoll;
     }
 
+    @Override
+    public boolean hasSecondRoll() {
+        return getSecondRoll() != Point.EMPTY;
+    }
+
     public Point getThirdRoll() {
         return Point.EMPTY;
+    }
+
+    @Override
+    public boolean hasThirdRoll() {
+        return false;
     }
 
     private void setSecondRoll(Point secondRoll) {

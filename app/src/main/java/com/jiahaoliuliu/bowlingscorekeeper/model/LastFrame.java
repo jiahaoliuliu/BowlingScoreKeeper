@@ -15,6 +15,11 @@ public class LastFrame extends Frame {
     }
 
     @Override
+    public boolean hasThirdRoll() {
+        return getThirdRoll() != Point.EMPTY;
+    }
+
+    @Override
     public boolean isLastFrame() {
         return true;
     }
