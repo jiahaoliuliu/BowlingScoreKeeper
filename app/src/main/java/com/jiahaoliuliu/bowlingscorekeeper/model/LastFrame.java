@@ -66,4 +66,13 @@ public class LastFrame extends Frame {
         return super.getCurrentScore();
     }
 
+    @Override
+    public String toString() {
+        return "LastFrame{" +
+                "firstRoll=" + getFirstRoll() +
+                ", secondRoll=" + getSecondRoll() +
+                ", thirdRoll=" + thirdRoll +
+                ", finalScore=" + getFinalScore() +
+                '}';
+    }
 }

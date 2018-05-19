@@ -6,6 +6,7 @@
     >
     <data>
         <import type="com.jiahaoliuliu.bowlingscorekeeper.model.Point"/>
+        <import type="android.view.View"/>
         <variable
             name="iframe"
             type="com.jiahaoliuliu.bowlingscorekeeper.model.IFrame"
@@ -44,6 +45,15 @@
                     tools:text="2"
                     android:gravity="center"
                     android:text="@{iframe.secondRoll.representation}"
+                    />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:text="2"
+                    android:gravity="center"
+                    android:text="@{iframe.thirdRoll.representation}"
+                    android:visibility="@{iframe.lastFrame? View.VISIBLE : View.GONE}"
                     />
             </LinearLayout>
             <!-- Score -->

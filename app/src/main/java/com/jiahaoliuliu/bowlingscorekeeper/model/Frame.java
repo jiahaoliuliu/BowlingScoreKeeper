@@ -22,7 +22,7 @@ public class Frame implements IFrame{
     /**
      * The final score
      */
-    private int finalScore;
+    private int finalScore = -1;
 
     public Frame() {
     }
@@ -160,8 +160,21 @@ public class Frame implements IFrame{
     }
 
     @Override
+    public boolean hasFinalScore() {
+        return finalScore != -1;
+    }
+
+    @Override
     public boolean isLastFrame() {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "Frame{" +
+                "firstRoll=" + firstRoll +
+                ", secondRoll=" + secondRoll +
+                ", finalScore=" + finalScore +
+                '}';
+    }
 }

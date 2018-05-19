@@ -1,25 +1,33 @@
 package com.jiahaoliuliu.bowlingscorekeeper;
 
+import android.util.Log;
+
+import com.jiahaoliuliu.bowlingscorekeeper.collection.LinkedList;
+import com.jiahaoliuliu.bowlingscorekeeper.collection.Node;
 import com.jiahaoliuliu.bowlingscorekeeper.model.Frame;
 import com.jiahaoliuliu.bowlingscorekeeper.model.IFrame;
 import com.jiahaoliuliu.bowlingscorekeeper.model.LastFrame;
 import com.jiahaoliuliu.bowlingscorekeeper.model.Point;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Main class that calculates the automatic bowling scores
  */
 public class AutomaticBowlingScorer {
+    private static final String TAG = "AutomaticBowlingScorer";
 
     private static final int MAXIMUM_SCORE_NUMBER = 10;
 
     public final List<IFrame> framesList;
     public int lastNonScorePosition;
     public boolean isGameOver;
+    public final LinkedList<Node<IFrame>> linkedFrameList;
 
     public AutomaticBowlingScorer() {
+        linkedFrameList = new LinkedList<>();
         framesList = new ArrayList<>();
         lastNonScorePosition = 0;
     }
@@ -29,7 +37,7 @@ public class AutomaticBowlingScorer {
      * @return
      */
     public int frameNumber() {
-        return framesList.size();
+        return linkedFrameList.size();
     }
 
     /**
@@ -38,12 +46,23 @@ public class AutomaticBowlingScorer {
      *      The current score
      */
     public int scoreSoFar() {
-        if (framesList.isEmpty() || lastNonScorePosition == 0) {
+        if (linkedFrameList.isEmpty()) {
             return 0;
         }
 
-        // The score from the last scored position
-        return framesList.get(lastNonScorePosition - 1).getFinalScore();
+        // Go throw the list backward to get the last scored node
+        Node<IFrame> lastScoredNode = linkedFrameList.getHead();
+        while(lastScoredNode.hasPreviousNode() && !lastScoredNode.getData().hasFinalScore()) {
+            lastScoredNode = lastScoredNode.getPreviousNode();
+        }
+
+        // If there is non score yet, return empty
+        if (lastScoredNode.getData().getFinalScore() == -1) {
+            return 0;
+        }
+
+        // Return the score from the last scored node
+        return lastScoredNode.getData().getFinalScore();
     }
 
     /**
@@ -53,6 +72,7 @@ public class AutomaticBowlingScorer {
      *      False otherwise
      */
     public boolean gameIsOver() {
+        // TODO: Check when to set the game as over
         return isGameOver;
     }
 
@@ -64,38 +84,48 @@ public class AutomaticBowlingScorer {
      *      the cumulative scores for those frames
      */
     public List<IFrame> roll(Point point) {
+        // TODO: Replace this for Log. This is used only for unit tests
+        System.out.println("Adding point " + point);
+
         if (gameIsOver()) {
             restartNewGame();
         }
 
-        IFrame frameToFill = getFrameToFill();
+        // Normal frames
+//        IFrame frameToFill = getFrameToFill();
+//        frameToFill.addPoint(point);
+//        updateScores();
+//        // Deprecate the second update
+//        updateScores();
+
+        // Linked list
+        IFrame frameToFill = getNextFrameFromLinkedList();
         frameToFill.addPoint(point);
         updateScores();
-        // Deprecate the second update
         updateScores();
-        return framesList;
+        return generateFramesList();
     }
 
-    private IFrame getFrameToFill() {
-        // For the first frame
-        if (framesList.isEmpty()) {
-            Frame firstFrame = new Frame();
-            framesList.add(firstFrame);
-            return firstFrame;
-        }
-
-        // Get the last frame in the list
-        IFrame lastFrame = framesList.get(framesList.size() - 1);
-        if (!lastFrame.hasFinished()) {
-            return lastFrame;
-        }
-
-        // The last frame in the list has finished
-        IFrame nextFrame = (framesList.size() == MAXIMUM_SCORE_NUMBER - 1)?
-                new LastFrame() : new Frame();
-        framesList.add(nextFrame);
-        return nextFrame;
-    }
+//    private IFrame getFrameToFill() {
+//        // For the first frame
+//        if (framesList.isEmpty()) {
+//            Frame firstFrame = new Frame();
+//            framesList.add(firstFrame);
+//            return firstFrame;
+//        }
+//
+//        // Get the last frame in the list
+//        IFrame lastFrame = framesList.get(framesList.size() - 1);
+//        if (!lastFrame.hasFinished()) {
+//            return lastFrame;
+//        }
+//
+//        // The last frame in the list has finished
+//        IFrame nextFrame = (framesList.size() == MAXIMUM_SCORE_NUMBER - 1)?
+//                new LastFrame() : new Frame();
+//        framesList.add(nextFrame);
+//        return nextFrame;
+//    }
 
     private void restartNewGame() {
         framesList.clear();
@@ -107,20 +137,17 @@ public class AutomaticBowlingScorer {
      * TODO: All this logic should be in the Frame itself. In the Add point method
      */
     private void updateScores() {
-        // Precondition. the current non score position cannot be larger than the frames list size
-        if (lastNonScorePosition >= framesList.size()) {
-            return;
+        // Find the last non scored frame
+        Node<IFrame> currentNode = linkedFrameList.getHead();
+        while(currentNode.hasPreviousNode() && !currentNode.getPreviousNode().getData().hasFinalScore()) {
+            currentNode = currentNode.getPreviousNode();
         }
 
-        // Precondition. The last non scored frame shouldn't be null
-        IFrame lastNonScoredFrame = framesList.get(lastNonScorePosition);
-        if (lastNonScoredFrame == null) {
-            // It is the limit of the frame
-            return;
-        }
-
+        IFrame lastNonScoredFrame = currentNode.getData();
+        // TODO: Replace this for Log. This is used only for unit tests
+        System.out.println("The last non scored frame is " + lastNonScoredFrame);
         if (lastNonScoredFrame.isLastFrame()) {
-            if (!lastNonScoredFrame.hasFinished()) {
+            if (!lastNonScoredFrame.hasFinished() || lastNonScoredFrame.hasFinalScore()) {
                 return;
             }
 
@@ -132,25 +159,26 @@ public class AutomaticBowlingScorer {
                     score += lastNonScoredFrame.getSecondRoll().getValue();
                     score += lastNonScoredFrame.getThirdRoll().getValue();
                     lastNonScoredFrame.setFinalScore(score);
-                    lastNonScorePosition++;
                     return;
                 }
             } else if (lastNonScoredFrame.isSpare()) {
                 lastNonScoredFrame.setFinalScore(scoreSoFar() + lastNonScoredFrame.getSecondRoll().getValue() +
                         lastNonScoredFrame.getThirdRoll().getValue());
-                lastNonScorePosition++;
                 return;
             } else {
                 lastNonScoredFrame.setFinalScore(scoreSoFar() + lastNonScoredFrame.getFirstRoll().getValue() +
                 lastNonScoredFrame.getSecondRoll().getValue());
-                lastNonScorePosition++;
                 return;
             }
         }
 
         if (lastNonScoredFrame.isStrike()) {
-            IFrame nextFrame = getNextFrame(lastNonScorePosition);
+            if (!currentNode.hasNextNode()) {
+                return;
+            }
 
+            Node<IFrame> nextNode = currentNode.getNextNode();
+            IFrame nextFrame = nextNode.getData();
             // If the next frame does not exists, not do anything
             if (nextFrame == null) {
                 return;
@@ -166,7 +194,11 @@ public class AutomaticBowlingScorer {
                     return;
                 }
 
-                IFrame nextNextFrame = getNextFrame(lastNonScorePosition + 1);
+                // Check if next next node exists
+                if (!nextNode.hasNextNode()) {
+                    return;
+                }
+                IFrame nextNextFrame = nextNode.getNextNode().getData();
 
                 // If the next next frame does not exists, not do anything
                 if (nextNextFrame == null) {
@@ -190,7 +222,11 @@ public class AutomaticBowlingScorer {
         }
 
         if (lastNonScoredFrame.isSpare()) {
-            IFrame nextFrame = getNextFrame(lastNonScorePosition);
+            if (!currentNode.hasNextNode()) {
+                return;
+            }
+
+            IFrame nextFrame = currentNode.getNextNode().getData();
             if (nextFrame == null) {
                 return;
             }
@@ -210,17 +246,54 @@ public class AutomaticBowlingScorer {
         }
     }
 
-    private IFrame getNextFrame(int currentFramePosition) {
-        // Precondition
-        if (framesList.isEmpty()) {
-            return null;
+//    private IFrame getNextFrame(int currentFramePosition) {
+//        // Precondition
+//        if (framesList.isEmpty()) {
+//            return null;
+//        }
+//
+//        // If it is the last frame, return null
+//        if (framesList.size() - 1 <= currentFramePosition) {
+//            return null;
+//        }
+//
+//        return framesList.get(currentFramePosition + 1);
+//    }
+//
+    private IFrame getNextFrameFromLinkedList() {
+        if (linkedFrameList.isEmpty()) {
+            // Create a new Node
+            // TODO: Create a model class called first frame
+            Frame frame = new Frame();
+            Node<IFrame> frameNode = new Node<>(frame);
+            linkedFrameList.add(frameNode);
+            return frame;
+        } else {
+            Node<IFrame> frameNode = linkedFrameList.getHead();
+            IFrame lastFrame = frameNode.getData();
+            if (!lastFrame.hasFinished()) {
+                return lastFrame;
+            } else {
+                // The last frame in the list has finished
+                IFrame nextFrame = (linkedFrameList.size() == MAXIMUM_SCORE_NUMBER - 1)?
+                        new LastFrame() : new Frame();
+                Node<IFrame> newFrameNode = new Node<>(nextFrame);
+                linkedFrameList.add(newFrameNode);
+                return nextFrame;
+            }
         }
+    }
 
-        // If it is the last frame, return null
-        if (framesList.size() - 1 <= currentFramePosition) {
-            return null;
-        }
+    private List<IFrame> generateFramesList() {
+        List<IFrame> framesList = new ArrayList();
+        Node<IFrame> previousNode = linkedFrameList.getHead();
+        do {
+            framesList.add(previousNode.getData());
+            previousNode = previousNode.getPreviousNode();
+        } while (previousNode != null);
 
-        return framesList.get(currentFramePosition + 1);
+        // Reverse the order
+        Collections.reverse(framesList);
+        return framesList;
     }
 }

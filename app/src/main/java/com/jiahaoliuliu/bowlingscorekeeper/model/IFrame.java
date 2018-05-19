@@ -72,12 +72,6 @@ public interface IFrame {
      */
     boolean addPoint(Point point);
 
-    /**
-     * Get the final score of this frame
-     * @return
-     */
-    int getFinalScore();
-
     boolean hasFinished();
 
     /**
@@ -88,10 +82,18 @@ public interface IFrame {
     int getCurrentScore();
 
     /**
+     * Get the final score of this frame
+     * @return
+     */
+    int getFinalScore();
+
+    /**
      * Set the last score
      * @param finalScore
      */
     void setFinalScore(int finalScore);
+
+    boolean hasFinalScore();
 
     /**
      * Check if it is the last frame.
